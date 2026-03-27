@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/theme.dart';
 import '../../providers/providers.dart';
+import '../../widgets/app_logo.dart';
 import '../../widgets/budget_ring.dart';
 import '../cart/cart_detail_screen.dart';
 
@@ -15,7 +16,7 @@ class DashboardScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('DropSniper'),
+        title: const Row(children: [DropSniperLogo(size: 28), SizedBox(width: 10), Text('DropSniper')]),
         actions: [
           IconButton(
             onPressed: () => ref.read(cartsProvider.notifier).runPriceRefresh(),
