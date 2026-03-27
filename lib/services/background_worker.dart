@@ -18,7 +18,6 @@ class BackgroundWorker {
         'dropsniper_periodic_scan',
         taskName,
         frequency: const Duration(hours: 6),
-        existingWorkPolicy: ExistingPeriodicWorkPolicy.keep,
         constraints: Constraints(networkType: NetworkType.connected),
       );
       await settings.put('workmanager_registered', true);

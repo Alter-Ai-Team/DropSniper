@@ -60,7 +60,7 @@ class CartDetailScreen extends ConsumerWidget {
                             (link) => Chip(
                               label: Text('${link.vendorName}: ${link.currentPrice.toStringAsFixed(2)}'),
                               backgroundColor: group.cheapestLink?.id == link.id
-                                  ? AppColors.neonGreen.withOpacity(.25)
+                                  ? AppColors.neonGreen.withValues(alpha: 0.25)
                                   : null,
                             ),
                           )
