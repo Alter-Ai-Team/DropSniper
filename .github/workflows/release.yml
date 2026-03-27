@@ -37,6 +37,10 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Normalize Android JVM target
+        run: |
+          echo "kotlin.jvm.target.validation.mode=warning" >> android/gradle.properties
+
       - name: Prepare Android signing files
         if: ${{ secrets.ANDROID_KEYSTORE_BASE64 != '' && secrets.ANDROID_KEY_ALIAS != '' && secrets.ANDROID_KEY_PASSWORD != '' && secrets.ANDROID_STORE_PASSWORD != '' }}
         run: |

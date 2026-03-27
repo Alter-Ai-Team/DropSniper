@@ -63,6 +63,10 @@ jobs:
       - name: Install dependencies
         run: flutter pub get
 
+      - name: Normalize Android JVM target
+        run: |
+          echo "kotlin.jvm.target.validation.mode=warning" >> android/gradle.properties
+
       - name: Build APK (release)
         run: flutter build apk --release
 
