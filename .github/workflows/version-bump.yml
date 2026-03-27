@@ -1,0 +1,72 @@
+name: Version Bump & Tag
+
+on:
+  workflow_dispatch:
+    inputs:
+      bump:
+        description: 'Version bump type'
+        required: true
+        default: patch
+        type: choice
+        options:
+          - patch
+          - minor
+          - major
+
+permissions:
+  contents: write
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Bump pubspec version and create git tag
+        run: |
+          python3 - <<'PY'
+          import re
+          from pathlib import Path
+          import os
+
+          bump = os.environ['BUMP']
+          p = Path('pubspec.yaml')
+          text = p.read_text()
+          m = re.search(r'^version:\s*(\d+)\.(\d+)\.(\d+)\+(\d+)\s*$', text, re.M)
+          if not m:
+            raise SystemExit('Could not parse version in pubspec.yaml')
+
+          major, minor, patch, build = map(int, m.groups())
+          if bump == 'major':
+            major, minor, patch = major + 1, 0, 0
+          elif bump == 'minor':
+            minor, patch = minor + 1, 0
+          else:
+            patch += 1
+          build += 1
+
+          new_version = f'{major}.{minor}.{patch}+{build}'
+          text = re.sub(r'^version:\s*.*$', f'version: {new_version}', text, flags=re.M)
+          p.write_text(text)
+          print(new_version)
+          Path('.new_version').write_text(new_version)
+          PY
+        env:
+          BUMP: ${{ inputs.bump }}
+
+      - name: Commit & tag
+        run: |
+          VERSION=$(cat .new_version)
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add pubspec.yaml
+          git commit -m "chore: bump version to ${VERSION}"
+          git tag "v${VERSION%%+*}"
+          git push origin HEAD
+          git push origin "v${VERSION%%+*}"
